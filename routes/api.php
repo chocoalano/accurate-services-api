@@ -3,8 +3,11 @@
 use App\Http\Controllers\Accurate\BillOfMaterialController;
 use App\Http\Controllers\Accurate\BranchController;
 use App\Http\Controllers\Accurate\CustomerController;
+use App\Http\Controllers\Accurate\Item\CategoryController;
+use App\Http\Controllers\Accurate\Item\ItemController;
 use App\Http\Controllers\Accurate\Sales\EmployeController;
 use App\Http\Controllers\Accurate\Sales\SalesReturnController;
+use App\Http\Controllers\Accurate\SupplierController;
 use App\Http\Controllers\Accurate\Warehouse\DeliveryController;
 use App\Http\Controllers\Accurate\Warehouse\FinishGoodController;
 use App\Http\Controllers\Accurate\Warehouse\WarehouseController;
@@ -176,4 +179,44 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::delete('{id}', 'destroy');
             });
     });
+    Route::prefix('product')->group(function () {
+        Route::prefix('item')
+            ->controller(ItemController::class)
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::get('{id}/nearest-cost', 'nearestCost');
+                Route::get('{id}/selling-price', 'sellingPrice');
+                Route::get('{id}/stock', 'stock');
+                Route::get('{id}/stock-mutation-history', 'stockMutationHistory');
+                Route::get('{id}/vendor-price', 'vendorPrices');
+                Route::get('create', 'create');
+                Route::post('/', 'store');
+                Route::get('{id}', 'show');
+                Route::get('{id}/edit', 'edit');
+                Route::put('/', 'update');
+                Route::delete('{id}', 'destroy');
+            });
+        Route::prefix('item-categories')
+            ->controller(CategoryController::class)
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::get('create', 'create');
+                Route::post('/', 'store');
+                Route::get('{id}', 'show');
+                Route::get('{id}/edit', 'edit');
+                Route::put('/', 'update');
+                Route::delete('{id}', 'destroy');
+            });
+    });
+    Route::prefix('supplier')
+            ->controller(SupplierController::class)
+            ->group(function () {
+                Route::get('/', 'index');
+                Route::get('create', 'create');
+                Route::post('/', 'store');
+                Route::get('{id}', 'show');
+                Route::get('{id}/edit', 'edit');
+                Route::put('/', 'update');
+                Route::delete('{id}', 'destroy');
+            });
 });

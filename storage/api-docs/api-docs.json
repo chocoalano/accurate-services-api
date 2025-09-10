@@ -1615,6 +1615,1226 @@
                 ]
             }
         },
+        "/product/item-categories": {
+            "get": {
+                "tags": [
+                    "Product: Item Categories"
+                ],
+                "summary": "Daftar Kategori Item",
+                "description": "Ambil daftar kategori item dari Accurate dengan paginasi, pencarian (sp.keyword), dan pemilihan fields.",
+                "operationId": "accurateItemCategoryIndex",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman (default 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Jumlah per halaman (default 50, max 200)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 50
+                        }
+                    },
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "Kata kunci pencarian (di-map ke sp.keyword)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "BEVERAGE"
+                        }
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "description": "Daftar field dipisah koma (mis. id,name,code,parent)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "id,name,code,parent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "example": {
+                                                    "id": 101,
+                                                    "name": "BEVERAGE",
+                                                    "code": "CAT-BEV",
+                                                    "parent": null
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 137,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Product: Item Categories"
+                ],
+                "summary": "Update Kategori Item (PUT)",
+                "description": "Update kategori—wajib menyertakan `id` di body. Dialirkan ke `item-category/save.do`.",
+                "operationId": "accurateItemCategoryUpdate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "example": {
+                                "id": 101,
+                                "name": "BEVERAGE (New)",
+                                "code": "CAT-BEV",
+                                "parent": null
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Product: Item Categories"
+                ],
+                "summary": "Create/Update Kategori Item",
+                "description": "Create jika body tanpa `id`, update jika menyertakan `id`. Dialirkan ke `item-category/save.do`.",
+                "operationId": "accurateItemCategoryStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "name",
+                                            "code"
+                                        ],
+                                        "example": {
+                                            "name": "BEVERAGE",
+                                            "code": "CAT-BEV",
+                                            "parent": null
+                                        }
+                                    },
+                                    {
+                                        "required": [
+                                            "id",
+                                            "name",
+                                            "code"
+                                        ],
+                                        "example": {
+                                            "id": 101,
+                                            "name": "BEVERAGE UPDATED",
+                                            "code": "CAT-BEV",
+                                            "parent": null
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "200": {
+                        "description": "Updated"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item-categories/{id}": {
+            "get": {
+                "tags": [
+                    "Product: Item Categories"
+                ],
+                "summary": "Detail Kategori Item",
+                "description": "Ambil detail kategori item berdasarkan ID internal Accurate.",
+                "operationId": "accurateItemCategoryShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal kategori di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 101
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "id": 101,
+                                    "name": "BEVERAGE",
+                                    "code": "CAT-BEV",
+                                    "parent": null
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Product: Item Categories"
+                ],
+                "summary": "Hapus Kategori Item",
+                "description": "Menghapus kategori berdasarkan ID internal Accurate. Dialirkan ke `item-category/delete.do` (POST) dengan `ids: [id]`.",
+                "operationId": "accurateItemCategoryDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal kategori di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 101
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Daftar Item (Barang & Jasa)",
+                "description": "Ambil daftar item dari Accurate dengan paginasi, pencarian, fields, & filter.* (mis. filter.itemType=INVENTORY).",
+                "operationId": "accurateItemIndex",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman (default 1)",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Jumlah per halaman (default 50, max 200)",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 50
+                        }
+                    },
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "Kata kunci (sp.keyword)",
+                        "schema": {
+                            "type": "string",
+                            "example": "MATCHA"
+                        }
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "description": "Daftar field dipisah koma (mis. id,name,no)",
+                        "schema": {
+                            "type": "string",
+                            "example": "id,name,no"
+                        }
+                    },
+                    {
+                        "name": "filter.itemType",
+                        "in": "query",
+                        "description": "Filter tipe item (INVENTORY / SERVICE)",
+                        "schema": {
+                            "type": "string",
+                            "example": "INVENTORY"
+                        }
+                    },
+                    {
+                        "name": "filter.isActive",
+                        "in": "query",
+                        "description": "Filter aktif (true/false)",
+                        "schema": {
+                            "type": "string",
+                            "example": "true"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 137,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Update Item (PUT)",
+                "description": "Update item—wajib menyertakan `id` di body.",
+                "operationId": "accurateItemUpdate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "example": {
+                                "id": 101,
+                                "name": "Matcha 1kg (New)"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Create/Update Item",
+                "description": "Create jika tanpa `id`, update jika menyertakan `id`. Accurate memakai endpoint yang sama `item/save.do`.",
+                "operationId": "accurateItemStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "example": {
+                                "name": "Matcha 1kg",
+                                "code": "SKU-MATCHA-1KG",
+                                "itemType": "INVENTORY",
+                                "unit": "KG",
+                                "salesPrice": 125000
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "200": {
+                        "description": "Updated"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item/{id}/nearest-cost": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Nearest Cost (Item)",
+                "description": "Mengambil biaya terdekat (nearest cost) untuk sebuah Item dari Accurate. Dapat difilter dengan tanggal dan/atau gudang.",
+                "operationId": "accurateItemNearestCost",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal Item di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 101
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Tanggal acuan (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-09-01"
+                        }
+                    },
+                    {
+                        "name": "warehouseId",
+                        "in": "query",
+                        "description": "ID gudang (opsional) untuk menghitung biaya terdekat per gudang",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12
+                        }
+                    },
+                    {
+                        "name": "qty",
+                        "in": "query",
+                        "description": "Kuantitas (opsional) bila perhitungan biaya mempertimbangkan jumlah",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "cost": 98765.43,
+                                    "currency": "IDR",
+                                    "asOfDate": "2025-09-01",
+                                    "warehouseId": 12,
+                                    "method": "nearest"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item/{id}/selling-price": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Selling Price (Item)",
+                "description": "Mengambil harga jual (selling price) untuk sebuah Item dari Accurate. Dapat dipengaruhi oleh level harga, pelanggan, kuantitas, tanggal, gudang, dan mata uang.",
+                "operationId": "accurateItemSellingPrice",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal Item di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 101
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Tanggal acuan (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-09-01"
+                        }
+                    },
+                    {
+                        "name": "customerId",
+                        "in": "query",
+                        "description": "ID pelanggan (jika harga dipengaruhi customer/kontrak)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 555
+                        }
+                    },
+                    {
+                        "name": "priceCategoryId",
+                        "in": "query",
+                        "description": "ID kategori/level harga (Price Category)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "qty",
+                        "in": "query",
+                        "description": "Kuantitas (jika ada tier/quantity break)",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "description": "Kode mata uang (mis. IDR, USD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "IDR"
+                        }
+                    },
+                    {
+                        "name": "warehouseId",
+                        "in": "query",
+                        "description": "ID gudang (bila harga mempertimbangkan gudang)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "price": 125000,
+                                    "currency": "IDR",
+                                    "priceCategoryId": 3,
+                                    "priceCategoryName": "Retail",
+                                    "customerId": 555,
+                                    "qty": 10,
+                                    "asOfDate": "2025-09-01",
+                                    "warehouseId": 12,
+                                    "source": "price-category"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item/{id}/stock": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Stock Item",
+                "description": "Mengambil informasi stok suatu Item di Accurate. Bisa difilter dengan gudang dan tanggal.",
+                "operationId": "accurateItemStock",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal Item di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 101
+                        }
+                    },
+                    {
+                        "name": "warehouseId",
+                        "in": "query",
+                        "description": "ID gudang (opsional) untuk stok per gudang",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Tanggal acuan stok (YYYY-MM-DD). Default: hari ini.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-09-10"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "itemId": 101,
+                                    "warehouseId": 12,
+                                    "warehouseName": "Gudang Utama",
+                                    "stock": 150,
+                                    "reserved": 20,
+                                    "available": 130,
+                                    "asOfDate": "2025-09-10"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item/{id}/stock-mutation-history": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Stock Mutation History (Item)",
+                "description": "Mengambil riwayat mutasi stok (masuk/keluar/penyesuaian) untuk sebuah Item dari Accurate. Bisa difilter tanggal dan gudang, serta dipaginasi.",
+                "operationId": "accurateItemStockMutationHistory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal Item di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 101
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "Tanggal mulai rentang (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-09-01"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "Tanggal akhir rentang (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-09-10"
+                        }
+                    },
+                    {
+                        "name": "warehouseId",
+                        "in": "query",
+                        "description": "ID gudang (opsional) untuk membatasi mutasi pada gudang tertentu",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman (default 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Jumlah baris per halaman (default 50, max 200)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 50
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "example": {
+                                                    "date": "2025-09-05",
+                                                    "warehouseId": 12,
+                                                    "warehouseName": "Gudang Utama",
+                                                    "docType": "Sales Delivery",
+                                                    "docNo": "SD-000123",
+                                                    "reference": "Pengiriman 000123",
+                                                    "qtyIn": 0,
+                                                    "qtyOut": 5,
+                                                    "balance": 125,
+                                                    "remarks": "Kirim ke customer A"
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 240,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item/{id}/vendor-prices": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Vendor Prices (Item)",
+                "description": "Mengambil daftar harga vendor (Vendor Price) untuk sebuah Item dari Accurate. Mendukung filter vendor, unit, dan pagination.",
+                "operationId": "accurateItemVendorPrices",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal Item di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345
+                        }
+                    },
+                    {
+                        "name": "vendorId",
+                        "in": "query",
+                        "description": "Filter berdasarkan vendor pemasok",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 67890
+                        }
+                    },
+                    {
+                        "name": "unit",
+                        "in": "query",
+                        "description": "Filter satuan (isi jika item multi-unit)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "PCS"
+                        }
+                    },
+                    {
+                        "name": "activeOnly",
+                        "in": "query",
+                        "description": "True untuk hanya harga yang masih aktif (tanpa expired atau belum kedaluwarsa)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman (default 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Jumlah baris per halaman (default 50, max 200)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 50
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "example": {
+                                                    "id": 991122,
+                                                    "itemId": 12345,
+                                                    "vendorId": 67890,
+                                                    "unit": "PCS",
+                                                    "price": 14500,
+                                                    "currency": "IDR",
+                                                    "minQty": 1,
+                                                    "effectiveDate": "2025-09-01",
+                                                    "expiredDate": null,
+                                                    "notes": "Harga kontrak Q4 2025"
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 240,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/product/item/{id}": {
+            "get": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Detail Item",
+                "description": "Ambil detail satu item berdasarkan ID internal Accurate.",
+                "operationId": "accurateItemShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "101"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Product: Items"
+                ],
+                "summary": "Hapus Item",
+                "description": "Menghapus item berdasarkan ID internal Accurate.",
+                "operationId": "accurateItemDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "101"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
         "/purchase/invoice": {
             "get": {
                 "tags": [
@@ -5794,6 +7014,381 @@
                     },
                     "500": {
                         "description": "Kesalahan internal server."
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/supplier": {
+            "get": {
+                "tags": [
+                    "Pemasok (Vendor)"
+                ],
+                "summary": "Daftar Vendor",
+                "description": "Mengambil daftar vendor dari Accurate dengan dukungan paginasi (sp.page, sp.pageSize), pencarian (sp.keyword), dan pemilihan fields.",
+                "operationId": "getVendorList",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman (default 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Jumlah item per halaman (default 50, max 200)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 50
+                        }
+                    },
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "Kata kunci pencarian (di-map ke sp.keyword)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "PT SINERGI"
+                        }
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "description": "Daftar field dipisah koma untuk optimasi payload (mis. id,name,code,phone,email)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "id,name,code,phone,email"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "example": {
+                                                    "id": 501,
+                                                    "name": "PT Sumber Bahan Makmur",
+                                                    "code": "VND-0001",
+                                                    "phone": "021-555-1234",
+                                                    "email": "purchasing@sumberbahan.co.id",
+                                                    "address": "Jl. Industri No. 1, Jakarta",
+                                                    "isActive": true
+                                                }
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 240,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Pemasok (Vendor)"
+                ],
+                "summary": "Update Vendor (PUT)",
+                "description": "Memperbarui vendor—wajib menyertakan `id` di body. Dialirkan ke Accurate `vendor/save.do`.",
+                "operationId": "updateVendor",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "name"
+                                ]
+                            },
+                            "example": {
+                                "id": 501,
+                                "name": "PT Sumber Bahan Makmur (Updated)",
+                                "phone": "021-555-5678",
+                                "email": "purchasing@sumberbahan.co.id"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Pemasok (Vendor)"
+                ],
+                "summary": "Create/Update Vendor",
+                "description": "Create jika body **tanpa** `id`, update jika **menyertakan** `id`. Dialirkan ke Accurate `vendor/save.do`.",
+                "operationId": "createOrUpdateVendor",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "name"
+                                        ],
+                                        "example": {
+                                            "name": "PT Sumber Bahan Makmur",
+                                            "code": "VND-0001",
+                                            "phone": "021-555-1234",
+                                            "email": "purchasing@sumberbahan.co.id",
+                                            "address": "Jl. Industri No. 1, Jakarta",
+                                            "isActive": true
+                                        }
+                                    },
+                                    {
+                                        "required": [
+                                            "id",
+                                            "name"
+                                        ],
+                                        "example": {
+                                            "id": 501,
+                                            "name": "PT Sumber Bahan Makmur (Updated)",
+                                            "phone": "021-555-5678",
+                                            "isActive": true
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "success": true,
+                                    "message": "Created",
+                                    "data": {
+                                        "id": 602,
+                                        "name": "PT Sumber Bahan Makmur",
+                                        "code": "VND-0001"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "success": true,
+                                    "message": "Updated",
+                                    "data": {
+                                        "id": 501,
+                                        "name": "PT Sumber Bahan Makmur (Updated)"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/supplier/{id}": {
+            "get": {
+                "tags": [
+                    "Pemasok (Vendor)"
+                ],
+                "summary": "Detail Vendor",
+                "description": "Mengambil detail vendor berdasarkan ID internal Accurate.",
+                "operationId": "getVendorDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal vendor di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 501
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "id": 501,
+                                    "name": "PT Sumber Bahan Makmur",
+                                    "code": "VND-0001",
+                                    "phone": "021-555-1234",
+                                    "email": "purchasing@sumberbahan.co.id",
+                                    "address": "Jl. Industri No. 1, Jakarta",
+                                    "isActive": true
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Pemasok (Vendor)"
+                ],
+                "summary": "Hapus Vendor",
+                "description": "Menghapus vendor berdasarkan ID internal Accurate. Di Accurate dilakukan via `vendor/delete.do` (POST) dengan payload `ids: [id]`.",
+                "operationId": "deleteVendor",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID internal vendor di Accurate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 501
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 },
                 "security": [
@@ -17231,6 +18826,18 @@
         {
             "name": "Gudang: Warehouse",
             "description": "Mengelola data master gudang dan operasional umum gudang: melihat daftar lokasi gudang, menambah atau memperbarui informasi gudang, mengelola perpindahan barang antar gudang, serta mencari data terkait gudang secara keseluruhan. Tag ini mengelompokkan semua endpoint yang berkaitan dengan struktur fisik dan operasional manajemen gudang."
+        },
+        {
+            "name": "Product: Item Categories",
+            "description": "Endpoint integrasi Kategori Item (Item Category) Accurate Online"
+        },
+        {
+            "name": "Product: Items",
+            "description": "Endpoint integrasi Item (Barang & Jasa) Accurate Online"
+        },
+        {
+            "name": "Pemasok (Vendor)",
+            "description": "Endpoint integrasi Vendor (Pemasok) Accurate Online"
         }
     ]
 }
