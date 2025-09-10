@@ -14059,6 +14059,117 @@
                 },
                 "type": "object"
             },
+            "ItemCategoryDeleteResponse": {
+                "title": "Respons Hapus Kategori Item",
+                "description": "Struktur respons saat menghapus kategori item.",
+                "required": [
+                    "success",
+                    "message"
+                ],
+                "properties": {
+                    "success": {
+                        "description": "Respons hapus kategori item (DELETE /product/item-categories/{id}).\nMengikuti controller: { success, message }",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Data berhasil dihapus."
+                    }
+                },
+                "type": "object"
+            },
+            "ItemVendorPriceListResponse": {
+                "title": "Respons Daftar Vendor Price Item",
+                "description": "Struktur respons untuk daftar harga vendor per item dengan paginasi.",
+                "required": [
+                    "success",
+                    "data",
+                    "meta"
+                ],
+                "properties": {
+                    "success": {
+                        "description": "Respons daftar vendor price per item.",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 991122
+                                },
+                                "itemId": {
+                                    "type": "integer",
+                                    "example": 12345
+                                },
+                                "vendorId": {
+                                    "type": "integer",
+                                    "example": 67890
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "example": "PCS"
+                                },
+                                "price": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 14500
+                                },
+                                "currency": {
+                                    "type": "string",
+                                    "example": "IDR"
+                                },
+                                "minQty": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 1,
+                                    "nullable": true
+                                },
+                                "effectiveDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2025-09-01",
+                                    "nullable": true
+                                },
+                                "expiredDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2025-12-31",
+                                    "nullable": true
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "example": "Harga kontrak Q4 2025",
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "meta": {
+                        "properties": {
+                            "page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "pageSize": {
+                                "type": "integer",
+                                "example": 50
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 240,
+                                "nullable": true
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
             "PurchaseInvoiceDetailDownPaymentItem": {
                 "title": "Item Detail Uang Muka Faktur Pembelian",
                 "properties": {
@@ -18446,6 +18557,26 @@
                         "items": {
                             "$ref": "#/components/schemas/SalesReturnData"
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "VendorDeleteResponse": {
+                "title": "Respons Hapus Vendor",
+                "description": "Struktur respons saat menghapus vendor.",
+                "required": [
+                    "success",
+                    "message"
+                ],
+                "properties": {
+                    "success": {
+                        "description": "Respons hapus vendor (DELETE /supplier/{id}).\nMengikuti bentuk dari controller: { success, message }",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Data berhasil dihapus."
                     }
                 },
                 "type": "object"
