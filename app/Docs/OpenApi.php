@@ -20,6 +20,10 @@ namespace App\Docs;
  * url="http://localhost:8000/api",
  * description="Server Lokal Pengembangan"
  * )
+ * @OA\Server(
+ * url="https://service.sinergiabadiselalu.com/api",
+ * description="Server Public Produksi"
+ * )
  *
  * @OA\Tag(
  * name="Autentikasi",
