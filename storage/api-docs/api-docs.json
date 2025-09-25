@@ -4517,12 +4517,41 @@
                 "description": "Menambahkan pesanan pembelian baru atau memperbarui data pesanan pembelian yang sudah ada. Jika 'id' disediakan dalam request body, operasi dianggap sebagai update.",
                 "operationId": "createOrUpdatePurchaseOrder",
                 "requestBody": {
-                    "description": "Data pesanan pembelian untuk disimpan atau diperbarui.",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PurchaseOrderInput"
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "vendorNo",
+                                            "transDate"
+                                        ],
+                                        "example": {
+                                            "vendorNo": "V.00003",
+                                            "transDate": "24/09/2025",
+                                            "cashDiscPercent": 2,
+                                            "cashDiscount": 5000,
+                                            "currencyCode": "IDR",
+                                            "description": "Pesanan rutin material. (testing data)",
+                                            "fillPriceByVendorPrice": true,
+                                            "inclusiveTax": false,
+                                            "number": "PO-20240625-007",
+                                            "paymentTermName": "Net 30",
+                                            "rate": 1,
+                                            "shipDate": "30/06/2024",
+                                            "taxable": true,
+                                            "toAddress": "Gudang Utama, Jl. Raya No. 1",
+                                            "typeAutoNumber": 1,
+                                            "detailItem": [
+                                                {
+                                                    "itemNo": "100006",
+                                                    "unitPrice": 10000
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
                             }
                         }
                     }
@@ -8153,12 +8182,69 @@
                                             "name"
                                         ],
                                         "example": {
-                                            "name": "PT Sumber Bahan Makmur",
-                                            "code": "VND-0001",
-                                            "phone": "021-555-1234",
-                                            "email": "purchasing@sumberbahan.co.id",
-                                            "address": "Jl. Industri No. 1, Jakarta",
-                                            "isActive": true
+                                            "name": "PT. Halo Semua 123",
+                                            "transDate": "31/03/2016",
+                                            "billCity": "Jakarta",
+                                            "billCountry": "Indonesia",
+                                            "billProvince": "DKI Jakarta",
+                                            "billStreet": "Jl. Sudirman No. 123",
+                                            "billZipCode": "12345",
+                                            "branchId": 1,
+                                            "branchName": "Cabang Pusat",
+                                            "categoryName": "Pemasok Bahan",
+                                            "currencyCode": "IDR",
+                                            "defaultIncTax": true,
+                                            "description": "Vendor percobaan Accurate API",
+                                            "email": "vendor@example.com",
+                                            "fax": "021-1234567",
+                                            "mobilePhone": "08123456789",
+                                            "notes": "Catatan tambahan",
+                                            "npwpNo": "12.345.678.9-012.345",
+                                            "number": "VN-0001",
+                                            "pkpNo": "PKP-98765",
+                                            "taxCity": "Jakarta",
+                                            "taxCountry": "Indonesia",
+                                            "taxProvince": "DKI Jakarta",
+                                            "taxSameAsBill": true,
+                                            "taxStreet": "Jl. Gatot Subroto No. 45",
+                                            "taxZipCode": "54321",
+                                            "termName": "Net 30",
+                                            "typeAutoNumber": 2,
+                                            "vendorNo": "VND-001",
+                                            "vendorTaxType": "TAX",
+                                            "website": "http://contohvndr.com",
+                                            "workPhone": "021-9876543",
+                                            "wpName": "Wajib Pajak Vendor",
+                                            "detailContact": [
+                                                {
+                                                    "bbmPin": "BBM12345",
+                                                    "email": "kontak1@example.com",
+                                                    "fax": "021-000111",
+                                                    "homePhone": "021-999888",
+                                                    "id": 1,
+                                                    "mobilePhone": "0812000111",
+                                                    "name": "John Doe",
+                                                    "notes": "Kontak utama",
+                                                    "position": "Manager",
+                                                    "salutation": "Bapak",
+                                                    "website": "http://john.com",
+                                                    "workPhone": "021-111222"
+                                                }
+                                            ],
+                                            "detailOpenBalance": [
+                                                {
+                                                    "_status": "",
+                                                    "amount": 95275.12,
+                                                    "asOf": "31/03/2016",
+                                                    "currencyCode": "IDR",
+                                                    "description": "Saldo awal hutang",
+                                                    "id": 10,
+                                                    "number": "OB-001",
+                                                    "paymentTermName": "Net 30",
+                                                    "rate": 1,
+                                                    "typeAutoNumber": 1
+                                                }
+                                            ]
                                         }
                                     },
                                     {

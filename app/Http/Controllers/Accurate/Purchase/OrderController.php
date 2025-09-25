@@ -102,46 +102,74 @@ class OrderController extends Controller
 
     /**
      * @OA\Post(
-     * path="/purchase/order",
-     * summary="Membuat atau Memperbarui Pesanan Pembelian",
-     * description="Menambahkan pesanan pembelian baru atau memperbarui data pesanan pembelian yang sudah ada. Jika 'id' disediakan dalam request body, operasi dianggap sebagai update.",
-     * operationId="createOrUpdatePurchaseOrder",
-     * tags={"Purchase: Orders"},
-     * security={{"BearerAuth": {}}},
-     * @OA\RequestBody(
-     * required=true,
-     * description="Data pesanan pembelian untuk disimpan atau diperbarui.",
-     * @OA\JsonContent(ref="#/components/schemas/PurchaseOrderInput")
-     * ),
-     * @OA\Response(
-     * response=200,
-     * description="Pesanan pembelian berhasil diperbarui.",
-     * @OA\JsonContent(ref="#/components/schemas/PurchaseOrderSaveUpdateDeleteResponse")
-     * ),
-     * @OA\Response(
-     * response=201,
-     * description="Pesanan pembelian berhasil dibuat.",
-     * @OA\JsonContent(ref="#/components/schemas/PurchaseOrderSaveUpdateDeleteResponse")
-     * ),
-     * @OA\Response(
-     * response=401,
-     * description="Tidak terautentikasi.",
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Unauthenticated.")
-     * )
-     * ),
-     * @OA\Response(
-     * response=422,
-     * description="Kesalahan validasi input.",
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="The given data was invalid."),
-     * @OA\Property(property="errors", type="object", example={"vendorNo": {"The vendor no field is required."}})
-     * )
-     * ),
-     * @OA\Response(
-     * response=500,
-     * description="Kesalahan internal server."
-     * )
+     *   path="/purchase/order",
+     *   summary="Membuat atau Memperbarui Pesanan Pembelian",
+     *   description="Menambahkan pesanan pembelian baru atau memperbarui data pesanan pembelian yang sudah ada. Jika 'id' disediakan dalam request body, operasi dianggap sebagai update.",
+     *   operationId="createOrUpdatePurchaseOrder",
+     *   tags={"Purchase: Orders"},
+     *   security={{"BearerAuth": {}}},
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       oneOf={
+     *         @OA\Schema(
+     *           required={"vendorNo","transDate"},
+     *           example={
+     *             "vendorNo": "V.00003",
+     *             "transDate": "24/09/2025",
+     *             "cashDiscPercent": 2,
+     *             "cashDiscount": 5000,
+     *             "currencyCode": "IDR",
+     *             "description": "Pesanan rutin material. (testing data)",
+     *             "fillPriceByVendorPrice": true,
+     *             "inclusiveTax": false,
+     *             "number": "PO-20240625-007",
+     *             "paymentTermName": "Net 30",
+     *             "rate": 1,
+     *             "shipDate": "30/06/2024",
+     *             "taxable": true,
+     *             "toAddress": "Gudang Utama, Jl. Raya No. 1",
+     *             "typeAutoNumber": 1,
+     *             "detailItem": {
+     *               {
+     *                 "itemNo": "100006",
+     *                 "unitPrice": 10000
+     *               }
+     *             }
+     *           }
+     *         )
+     *       }
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Pesanan pembelian berhasil diperbarui.",
+     *     @OA\JsonContent(ref="#/components/schemas/PurchaseOrderSaveUpdateDeleteResponse")
+     *   ),
+     *   @OA\Response(
+     *     response=201,
+     *     description="Pesanan pembelian berhasil dibuat.",
+     *     @OA\JsonContent(ref="#/components/schemas/PurchaseOrderSaveUpdateDeleteResponse")
+     *   ),
+     *   @OA\Response(
+     *     response=401,
+     *     description="Tidak terautentikasi.",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=422,
+     *     description="Kesalahan validasi input.",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *       @OA\Property(property="errors", type="object", example={"vendorNo": {"The vendor no field is required."}})
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=500,
+     *     description="Kesalahan internal server."
+     *   )
      * )
      */
     public function store(FormRequest $request)
@@ -151,7 +179,6 @@ class OrderController extends Controller
         $response = $this->accurate->post(true, $url, $input, []);
         return response()->json($response, $response['status']);
     }
-
     /**
      * @OA\Get(
      * path="/purchase/order/{id}",

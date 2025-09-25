@@ -135,13 +135,70 @@ class SupplierController extends Controller
      *         @OA\Schema(
      *           required={"name"},
      *           example={
-     *             "name": "PT Sumber Bahan Makmur",
-     *             "code": "VND-0001",
-     *             "phone": "021-555-1234",
-     *             "email": "purchasing@sumberbahan.co.id",
-     *             "address": "Jl. Industri No. 1, Jakarta",
-     *             "isActive": true
-     *           }
+     *              "name": "PT. Halo Semua 123",
+     *              "transDate": "31/03/2016",
+     *              "billCity": "Jakarta",
+     *              "billCountry": "Indonesia",
+     *              "billProvince": "DKI Jakarta",
+     *              "billStreet": "Jl. Sudirman No. 123",
+     *              "billZipCode": "12345",
+     *              "branchId": 1,
+     *              "branchName": "Cabang Pusat",
+     *              "categoryName": "Pemasok Bahan",
+     *              "currencyCode": "IDR",
+     *              "defaultIncTax": true,
+     *              "description": "Vendor percobaan Accurate API",
+     *              "email": "vendor@example.com",
+     *              "fax": "021-1234567",
+     *              "mobilePhone": "08123456789",
+     *              "notes": "Catatan tambahan",
+     *              "npwpNo": "12.345.678.9-012.345",
+     *              "number": "VN-0001",
+     *              "pkpNo": "PKP-98765",
+     *              "taxCity": "Jakarta",
+     *              "taxCountry": "Indonesia",
+     *              "taxProvince": "DKI Jakarta",
+     *              "taxSameAsBill": true,
+     *              "taxStreet": "Jl. Gatot Subroto No. 45",
+     *              "taxZipCode": "54321",
+     *              "termName": "Net 30",
+     *              "typeAutoNumber": 2,
+     *              "vendorNo": "VND-001",
+     *              "vendorTaxType": "TAX",
+     *              "website": "http://contohvndr.com",
+     *              "workPhone": "021-9876543",
+     *              "wpName": "Wajib Pajak Vendor",
+     *              "detailContact": {
+     *                  {
+     *                      "bbmPin": "BBM12345",
+     *                      "email": "kontak1@example.com",
+     *                      "fax": "021-000111",
+     *                      "homePhone": "021-999888",
+     *                      "id": 1,
+     *                      "mobilePhone": "0812000111",
+     *                      "name": "John Doe",
+     *                      "notes": "Kontak utama",
+     *                      "position": "Manager",
+     *                      "salutation": "Bapak",
+     *                      "website": "http://john.com",
+     *                      "workPhone": "021-111222"
+     *                  }
+     *              },
+     *              "detailOpenBalance": {
+     *                  {
+     *                      "_status": "",
+     *                      "amount": 95275.12,
+     *                      "asOf": "31/03/2016",
+     *                      "currencyCode": "IDR",
+     *                      "description": "Saldo awal hutang",
+     *                      "id": 10,
+     *                      "number": "OB-001",
+     *                      "paymentTermName": "Net 30",
+     *                      "rate": 1,
+     *                      "typeAutoNumber": 1
+     *                  }
+     *              }
+     *            }
      *         ),
      *         @OA\Schema(
      *           required={"id","name"},
