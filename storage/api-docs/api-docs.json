@@ -16,6 +16,10 @@
         {
             "url": "http://localhost:8000/api",
             "description": "Server Lokal Pengembangan"
+        },
+        {
+            "url": "https://service.sinergiabadiselalu.com/api",
+            "description": "Server Public Produksi"
         }
     ],
     "paths": {
@@ -2841,7 +2845,7 @@
                     "Purchase: Invoice"
                 ],
                 "summary": "Mendapatkan Daftar Faktur Pembelian",
-                "description": "Mengambil daftar semua faktur pembelian dari Accurate dengan dukungan paginasi.",
+                "description": "Ambil daftar faktur pembelian Accurate Online (paginasi). Tanggal format dd/MM/yyyy.",
                 "operationId": "getPurchaseInvoiceList",
                 "parameters": [
                     {
@@ -2865,15 +2869,146 @@
                             "minimum": 1,
                             "example": 50
                         }
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "description": "Daftar field dipisah koma (mis. id,name,code,parent)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "id,name,code,parent"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Daftar faktur pembelian berhasil diambil.",
+                        "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceListResponse"
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "s": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "d": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 101
+                                                            },
+                                                            "number": {
+                                                                "type": "string",
+                                                                "example": "PI-20240626-001"
+                                                            },
+                                                            "transDate": {
+                                                                "type": "string",
+                                                                "example": "26/06/2024"
+                                                            },
+                                                            "vendorName": {
+                                                                "type": "string",
+                                                                "example": "PT Supplier Maju"
+                                                            },
+                                                            "currencyCode": {
+                                                                "type": "string",
+                                                                "example": "IDR"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "OPEN"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Pembelian bahan baku.",
+                                                                "nullable": true
+                                                            },
+                                                            "subtotal": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 500000
+                                                            },
+                                                            "discount": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 50000
+                                                            },
+                                                            "tax": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 45000
+                                                            },
+                                                            "expenseTotal": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 50000
+                                                            },
+                                                            "downPaymentApplied": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 100000
+                                                            },
+                                                            "totalAmount": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 545000
+                                                            },
+                                                            "amountDue": {
+                                                                "type": "number",
+                                                                "format": "double",
+                                                                "example": 445000
+                                                            },
+                                                            "branchName": {
+                                                                "type": "string",
+                                                                "example": "Cabang Utama",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "sp": {
+                                                    "properties": {
+                                                        "page": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "pageSize": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "pageCount": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "rowCount": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "start": {
+                                                            "type": "integer",
+                                                            "example": 0
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2884,9 +3019,17 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "m": {
                                             "type": "string",
                                             "example": "Unauthenticated."
+                                        },
+                                        "d": {
+                                            "type": "object",
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
@@ -2895,7 +3038,28 @@
                         }
                     },
                     "500": {
-                        "description": "Kesalahan internal server."
+                        "description": "Kesalahan internal server.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "m": {
+                                            "type": "string",
+                                            "example": "Internal Server Error"
+                                        },
+                                        "d": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -2908,89 +3072,50 @@
                 "tags": [
                     "Purchase: Invoice"
                 ],
-                "summary": "Memperbarui Data Faktur Pembelian (via PUT)",
-                "description": "Memperbarui data faktur pembelian yang sudah ada. ID faktur pembelian harus disertakan dalam request body.",
+                "summary": "Update Faktur Pembelian (PUT → save.do)",
+                "description": "Update faktur; body harus memuat 'id'.",
                 "operationId": "updatePurchaseInvoice",
                 "requestBody": {
-                    "description": "Data faktur pembelian untuk diperbarui, termasuk ID faktur pembelian.",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PurchaseInvoiceInput"
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 101
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Faktur pembelian berhasil diperbarui.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceSaveUpdateDeleteResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
+                        "description": "Sukses.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Faktur pembelian tidak ditemukan (ID tidak valid).",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Purchase Invoice not found or invalid ID."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Kesalahan validasi input.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "vendorNo": [
-                                                    "The vendor no field is required."
-                                                ]
-                                            }
+                                        "m": {
+                                            "type": "string",
+                                            "example": "Data berhasil disimpan."
+                                        },
+                                        "d": {
+                                            "type": "integer",
+                                            "example": 101,
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -3003,37 +3128,553 @@
                 "tags": [
                     "Purchase: Invoice"
                 ],
-                "summary": "Membuat atau Memperbarui Faktur Pembelian",
-                "description": "Menambahkan faktur pembelian baru atau memperbarui data faktur pembelian yang sudah ada. Jika 'id' disediakan dalam request body, operasi dianggap sebagai update.",
+                "summary": "Create/Update Faktur Pembelian (save.do)",
+                "description": "Jika body memuat 'id' maka update, jika tidak create. Tanggal dd/MM/yyyy.",
                 "operationId": "createOrUpdatePurchaseInvoice",
                 "requestBody": {
-                    "description": "Data faktur pembelian untuk disimpan atau diperbarui.",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PurchaseInvoiceInput"
+                                "required": [
+                                    "vendorNo",
+                                    "transDate"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 101,
+                                        "nullable": true
+                                    },
+                                    "vendorNo": {
+                                        "type": "string",
+                                        "example": "VEN-00023"
+                                    },
+                                    "transDate": {
+                                        "type": "string",
+                                        "pattern": "^\\\\d{2}/\\\\d{2}/\\\\d{4}$",
+                                        "example": "31/03/2024"
+                                    },
+                                    "billNumber": {
+                                        "type": "string",
+                                        "example": "IVC-9981",
+                                        "nullable": true
+                                    },
+                                    "number": {
+                                        "type": "string",
+                                        "example": "PI-20240626-001",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Pembelian bahan baku bulan Juni.",
+                                        "nullable": true
+                                    },
+                                    "branchId": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "branchName": {
+                                        "type": "string",
+                                        "example": "Cabang Utama",
+                                        "nullable": true
+                                    },
+                                    "currencyCode": {
+                                        "type": "string",
+                                        "example": "IDR",
+                                        "nullable": true
+                                    },
+                                    "rate": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "fiscalRate": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "inclusiveTax": {
+                                        "type": "boolean",
+                                        "example": false,
+                                        "nullable": true
+                                    },
+                                    "taxable": {
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "tax1Name": {
+                                        "type": "string",
+                                        "example": "PPN",
+                                        "nullable": true
+                                    },
+                                    "taxDate": {
+                                        "type": "string",
+                                        "pattern": "^\\\\d{2}/\\\\d{2}/\\\\d{4}$",
+                                        "example": "26/06/2024",
+                                        "nullable": true
+                                    },
+                                    "taxNumber": {
+                                        "type": "string",
+                                        "example": "010.001.24.12345678",
+                                        "nullable": true
+                                    },
+                                    "cashDiscPercent": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 1.5,
+                                        "nullable": true
+                                    },
+                                    "cashDiscount": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 5000,
+                                        "nullable": true
+                                    },
+                                    "paymentTermName": {
+                                        "type": "string",
+                                        "example": "Net 30",
+                                        "nullable": true
+                                    },
+                                    "reverseInvoice": {
+                                        "type": "boolean",
+                                        "example": false,
+                                        "nullable": true
+                                    },
+                                    "invoiceDp": {
+                                        "type": "boolean",
+                                        "example": false,
+                                        "nullable": true
+                                    },
+                                    "inputDownPayment": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 0,
+                                        "nullable": true
+                                    },
+                                    "orderDownPaymentNumber": {
+                                        "type": "string",
+                                        "example": "DP-PO-0005",
+                                        "nullable": true
+                                    },
+                                    "fobName": {
+                                        "type": "string",
+                                        "example": "Pabrik Vendor",
+                                        "nullable": true
+                                    },
+                                    "shipmentName": {
+                                        "type": "string",
+                                        "example": "JNE Trucking",
+                                        "nullable": true
+                                    },
+                                    "shipDate": {
+                                        "type": "string",
+                                        "pattern": "^\\\\d{2}/\\\\d{2}/\\\\d{4}$",
+                                        "example": "26/06/2024",
+                                        "nullable": true
+                                    },
+                                    "toAddress": {
+                                        "type": "string",
+                                        "example": "Jl. Industri No. 1, Bandung",
+                                        "nullable": true
+                                    },
+                                    "typeAutoNumber": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "fillPriceByVendorPrice": {
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "documentCode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CTAS_IMPORT",
+                                            "CTAS_INVOICE",
+                                            "CTAS_PURCHASE",
+                                            "CTAS_UNCREDIT",
+                                            "DIGUNGGUNG"
+                                        ],
+                                        "example": "CTAS_INVOICE",
+                                        "nullable": true
+                                    },
+                                    "documentTransaction": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CTAS_DOKUMEN_KHUSUS",
+                                            "CTAS_PEMBAYARAN",
+                                            "CTAS_PEMBERITAHUAN_IMPORT",
+                                            "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
+                                            "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
+                                        ],
+                                        "example": "CTAS_PEMBAYARAN",
+                                        "nullable": true
+                                    },
+                                    "vendorTaxType": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CTAS_BESARAN_TERTENTU",
+                                            "CTAS_DPP_NILAI_LAIN",
+                                            "CTAS_IMPOR_BARANG_KENA_PAJAK",
+                                            "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
+                                            "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
+                                            "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
+                                            "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                            "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
+                                            "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
+                                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
+                                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
+                                            "CTAS_PENYERAHAN_LAINNYA"
+                                        ],
+                                        "example": "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                        "nullable": true
+                                    },
+                                    "detailItem": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "itemNo",
+                                                "quantity",
+                                                "unitPrice"
+                                            ],
+                                            "properties": {
+                                                "_status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "delete"
+                                                    ],
+                                                    "nullable": true
+                                                },
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 101,
+                                                    "nullable": true
+                                                },
+                                                "itemNo": {
+                                                    "type": "string",
+                                                    "example": "RAW-001"
+                                                },
+                                                "detailName": {
+                                                    "type": "string",
+                                                    "example": "Bubuk Matcha Premium",
+                                                    "nullable": true
+                                                },
+                                                "detailNotes": {
+                                                    "type": "string",
+                                                    "example": "Batch 2406, exp 06/2026",
+                                                    "nullable": true
+                                                },
+                                                "quantity": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 5
+                                                },
+                                                "itemUnitName": {
+                                                    "type": "string",
+                                                    "example": "Sak",
+                                                    "nullable": true
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 100000
+                                                },
+                                                "itemDiscPercent": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 10,
+                                                    "nullable": true
+                                                },
+                                                "itemCashDiscount": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 0,
+                                                    "nullable": true
+                                                },
+                                                "useTax1": {
+                                                    "type": "boolean",
+                                                    "example": true,
+                                                    "nullable": true
+                                                },
+                                                "useTax2": {
+                                                    "type": "boolean",
+                                                    "example": false,
+                                                    "nullable": true
+                                                },
+                                                "useTax3": {
+                                                    "type": "boolean",
+                                                    "example": false,
+                                                    "nullable": true
+                                                },
+                                                "warehouseName": {
+                                                    "type": "string",
+                                                    "example": "Gudang A",
+                                                    "nullable": true
+                                                },
+                                                "departmentName": {
+                                                    "type": "string",
+                                                    "example": "Logistik",
+                                                    "nullable": true
+                                                },
+                                                "projectNo": {
+                                                    "type": "string",
+                                                    "example": "PROJ-001",
+                                                    "nullable": true
+                                                },
+                                                "purchaseOrderNumber": {
+                                                    "type": "string",
+                                                    "example": "PO-00045",
+                                                    "nullable": true
+                                                },
+                                                "purchaseRequisitionNumber": {
+                                                    "type": "string",
+                                                    "example": "PR-00011",
+                                                    "nullable": true
+                                                },
+                                                "receiveItemNumber": {
+                                                    "type": "string",
+                                                    "example": "RI-00022",
+                                                    "nullable": true
+                                                },
+                                                "dataClassification1Name": {
+                                                    "type": "string",
+                                                    "example": "Kategori A",
+                                                    "nullable": true
+                                                },
+                                                "dataClassification2Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification3Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification4Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification5Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification6Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification7Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification8Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification9Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification10Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "detailExpense": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "_status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "delete"
+                                                    ],
+                                                    "nullable": true
+                                                },
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 7,
+                                                    "nullable": true
+                                                },
+                                                "expenseName": {
+                                                    "type": "string",
+                                                    "example": "Biaya Pengiriman",
+                                                    "nullable": true
+                                                },
+                                                "expenseAmount": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 50000
+                                                },
+                                                "amountCurrency": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 50000,
+                                                    "nullable": true
+                                                },
+                                                "expenseCurrencyCode": {
+                                                    "type": "string",
+                                                    "example": "IDR",
+                                                    "nullable": true
+                                                },
+                                                "accountNo": {
+                                                    "type": "string",
+                                                    "example": "5101-01",
+                                                    "nullable": true
+                                                },
+                                                "allocateToItemCost": {
+                                                    "type": "boolean",
+                                                    "example": true,
+                                                    "nullable": true
+                                                },
+                                                "chargedVendorName": {
+                                                    "type": "string",
+                                                    "example": "Vendor Ekspedisi A",
+                                                    "nullable": true
+                                                },
+                                                "departmentName": {
+                                                    "type": "string",
+                                                    "example": "Pembelian",
+                                                    "nullable": true
+                                                },
+                                                "purchaseOrderNumber": {
+                                                    "type": "string",
+                                                    "example": "PO-00045",
+                                                    "nullable": true
+                                                },
+                                                "expenseNotes": {
+                                                    "type": "string",
+                                                    "example": "Pengiriman darat, 2 hari",
+                                                    "nullable": true
+                                                },
+                                                "dataClassification1Name": {
+                                                    "type": "string",
+                                                    "example": "Proyek X",
+                                                    "nullable": true
+                                                },
+                                                "dataClassification2Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification3Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification4Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification5Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification6Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification7Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification8Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification9Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "dataClassification10Name": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "detailDownPayment": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 12,
+                                                    "nullable": true
+                                                },
+                                                "invoiceNumber": {
+                                                    "type": "string",
+                                                    "example": "DP-PI-00012",
+                                                    "nullable": true
+                                                },
+                                                "paymentAmount": {
+                                                    "type": "number",
+                                                    "format": "double",
+                                                    "example": 250000
+                                                },
+                                                "_status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "delete"
+                                                    ],
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Faktur pembelian berhasil diperbarui.",
+                        "description": "Sukses (create/update).",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceSaveUpdateDeleteResponse"
-                                }
-                            }
-                        }
-                    },
-                    "201": {
-                        "description": "Faktur pembelian berhasil dibuat.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceSaveUpdateDeleteResponse"
+                                    "properties": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "m": {
+                                            "type": "string",
+                                            "example": "Data berhasil disimpan."
+                                        },
+                                        "d": {
+                                            "type": "integer",
+                                            "example": 101,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -3044,9 +3685,17 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "m": {
                                             "type": "string",
                                             "example": "Unauthenticated."
+                                        },
+                                        "d": {
+                                            "type": "object",
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
@@ -3055,16 +3704,20 @@
                         }
                     },
                     "422": {
-                        "description": "Kesalahan validasi input.",
+                        "description": "Validasi gagal.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
                                         },
-                                        "errors": {
+                                        "m": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "d": {
                                             "type": "object",
                                             "example": {
                                                 "vendorNo": [
@@ -3079,7 +3732,28 @@
                         }
                     },
                     "500": {
-                        "description": "Kesalahan internal server."
+                        "description": "Kesalahan internal server.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "m": {
+                                            "type": "string",
+                                            "example": "Internal Server Error"
+                                        },
+                                        "d": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -3094,38 +3768,67 @@
                 "tags": [
                     "Purchase: Invoice"
                 ],
-                "summary": "Mendapatkan Atribut Form Pembuatan Faktur Pembelian",
-                "description": "Mengambil daftar opsi dan atribut yang diperlukan untuk mengisi form pembuatan faktur pembelian baru.",
+                "summary": "Atribut Form Pembuatan Faktur Pembelian",
+                "description": "Daftar opsi enum untuk form create faktur.",
                 "operationId": "getPurchaseInvoiceCreateFormAttributes",
                 "responses": {
                     "200": {
-                        "description": "Atribut form berhasil diambil.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceFormAttributesResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
+                        "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
+                                        "doc_type": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "CTAS_IMPORT",
+                                                    "CTAS_INVOICE",
+                                                    "CTAS_PURCHASE",
+                                                    "CTAS_UNCREDIT",
+                                                    "DIGUNGGUNG"
+                                                ]
+                                            }
+                                        },
+                                        "trx_type": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "CTAS_DOKUMEN_KHUSUS",
+                                                    "CTAS_PEMBAYARAN",
+                                                    "CTAS_PEMBERITAHUAN_IMPORT",
+                                                    "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
+                                                    "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
+                                                ]
+                                            }
+                                        },
+                                        "tax_type": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "CTAS_BESARAN_TERTENTU",
+                                                    "CTAS_DPP_NILAI_LAIN",
+                                                    "CTAS_IMPOR_BARANG_KENA_PAJAK",
+                                                    "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
+                                                    "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
+                                                    "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
+                                                    "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                                    "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
+                                                    "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
+                                                    "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
+                                                    "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
+                                                    "CTAS_PENYERAHAN_LAINNYA"
+                                                ]
+                                            }
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -3140,38 +3843,67 @@
                 "tags": [
                     "Purchase: Invoice"
                 ],
-                "summary": "Mendapatkan Atribut Form Uang Muka Pembelian",
-                "description": "Mengambil daftar opsi dan atribut yang diperlukan untuk mengisi form pembuatan uang muka faktur pembelian.",
+                "summary": "Atribut Form Uang Muka Pembelian",
+                "description": "Daftar opsi enum untuk form pembuatan DP.",
                 "operationId": "getPurchaseInvoiceDownPaymentFormAttributes",
                 "responses": {
                     "200": {
-                        "description": "Atribut form uang muka berhasil diambil.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceDownpayFormAttributesResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
+                        "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
+                                        "doc_code": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "CTAS_IMPORT",
+                                                    "CTAS_INVOICE",
+                                                    "CTAS_PURCHASE",
+                                                    "CTAS_UNCREDIT",
+                                                    "DIGUNGGUNG"
+                                                ]
+                                            }
+                                        },
+                                        "trx_type": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "CTAS_DOKUMEN_KHUSUS",
+                                                    "CTAS_PEMBAYARAN",
+                                                    "CTAS_PEMBERITAHUAN_IMPORT",
+                                                    "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
+                                                    "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
+                                                ]
+                                            }
+                                        },
+                                        "tax_type": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "CTAS_BESARAN_TERTENTU",
+                                                    "CTAS_DPP_NILAI_LAIN",
+                                                    "CTAS_IMPOR_BARANG_KENA_PAJAK",
+                                                    "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
+                                                    "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
+                                                    "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
+                                                    "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                                    "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
+                                                    "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
+                                                    "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
+                                                    "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
+                                                    "CTAS_PENYERAHAN_LAINNYA"
+                                                ]
+                                            }
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -3187,72 +3919,185 @@
                     "Purchase: Invoice"
                 ],
                 "summary": "Membuat Uang Muka Faktur Pembelian",
-                "description": "Membuat uang muka untuk faktur pembelian.",
+                "description": "Membuat DP pembelian. Tanggal dd/MM/yyyy.",
                 "operationId": "createPurchaseInvoiceDownPayment",
                 "requestBody": {
-                    "description": "Data uang muka faktur pembelian.",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PurchaseInvoiceDownPaymentInput"
+                                "required": [
+                                    "billNumber",
+                                    "dpAmount",
+                                    "vendorNo"
+                                ],
+                                "properties": {
+                                    "billNumber": {
+                                        "type": "string",
+                                        "example": "BILL-DP-001"
+                                    },
+                                    "dpAmount": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 100000
+                                    },
+                                    "vendorNo": {
+                                        "type": "string",
+                                        "example": "VEN-00023"
+                                    },
+                                    "number": {
+                                        "type": "string",
+                                        "example": "DP-PI-20240626-001",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Uang muka pembelian Juni.",
+                                        "nullable": true
+                                    },
+                                    "currencyCode": {
+                                        "type": "string",
+                                        "example": "IDR",
+                                        "nullable": true
+                                    },
+                                    "rate": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "fiscalRate": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "inclusiveTax": {
+                                        "type": "boolean",
+                                        "example": false,
+                                        "nullable": true
+                                    },
+                                    "isTaxable": {
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "tax1Name": {
+                                        "type": "string",
+                                        "example": "PPN",
+                                        "nullable": true
+                                    },
+                                    "taxDate": {
+                                        "type": "string",
+                                        "pattern": "^\\\\d{2}/\\\\d{2}/\\\\d{4}$",
+                                        "example": "26/06/2024",
+                                        "nullable": true
+                                    },
+                                    "taxNumber": {
+                                        "type": "string",
+                                        "example": "010.001.24.98765432",
+                                        "nullable": true
+                                    },
+                                    "paymentTermName": {
+                                        "type": "string",
+                                        "example": "Net 30",
+                                        "nullable": true
+                                    },
+                                    "poNumber": {
+                                        "type": "string",
+                                        "example": "PO-00045",
+                                        "nullable": true
+                                    },
+                                    "toAddress": {
+                                        "type": "string",
+                                        "example": "Jl. Penerima DP No. 2",
+                                        "nullable": true
+                                    },
+                                    "transDate": {
+                                        "type": "string",
+                                        "pattern": "^\\\\d{2}/\\\\d{2}/\\\\d{4}$",
+                                        "example": "26/06/2024",
+                                        "nullable": true
+                                    },
+                                    "typeAutoNumber": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "documentCode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CTAS_IMPORT",
+                                            "CTAS_INVOICE",
+                                            "CTAS_PURCHASE",
+                                            "CTAS_UNCREDIT",
+                                            "DIGUNGGUNG"
+                                        ],
+                                        "example": "CTAS_INVOICE",
+                                        "nullable": true
+                                    },
+                                    "documentTransaction": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CTAS_DOKUMEN_KHUSUS",
+                                            "CTAS_PEMBAYARAN",
+                                            "CTAS_PEMBERITAHUAN_IMPORT",
+                                            "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
+                                            "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
+                                        ],
+                                        "example": "CTAS_PEMBAYARAN",
+                                        "nullable": true
+                                    },
+                                    "vendorTaxType": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CTAS_BESARAN_TERTENTU",
+                                            "CTAS_DPP_NILAI_LAIN",
+                                            "CTAS_IMPOR_BARANG_KENA_PAJAK",
+                                            "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR NEGERI",
+                                            "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
+                                            "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
+                                            "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                            "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
+                                            "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
+                                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
+                                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
+                                            "CTAS_PENYERAHAN_LAINNYA"
+                                        ],
+                                        "example": "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Uang muka faktur pembelian berhasil dibuat.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceSaveUpdateDeleteResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
+                        "description": "Sukses.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Kesalahan validasi input.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "billNumber": [
-                                                    "The bill number field is required."
-                                                ]
-                                            }
+                                        "m": {
+                                            "type": "string",
+                                            "example": "Data berhasil disimpan."
+                                        },
+                                        "d": {
+                                            "type": "integer",
+                                            "example": 555,
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -3267,14 +4112,14 @@
                 "tags": [
                     "Purchase: Invoice"
                 ],
-                "summary": "Mendapatkan Detail Faktur Pembelian",
-                "description": "Mengambil detail lengkap satu faktur pembelian berdasarkan ID internalnya.",
+                "summary": "Detail Faktur Pembelian",
+                "description": "Detail faktur pembelian berdasarkan ID internal Accurate.",
                 "operationId": "getPurchaseInvoiceDetail",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID unik internal faktur pembelian.",
+                        "description": "ID internal Accurate.",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -3284,24 +4129,97 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Detail faktur pembelian berhasil diambil.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceData"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
+                        "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 101
+                                        },
+                                        "number": {
                                             "type": "string",
-                                            "example": "Unauthenticated."
+                                            "example": "PI-20240626-001"
+                                        },
+                                        "transDate": {
+                                            "type": "string",
+                                            "example": "26/06/2024"
+                                        },
+                                        "vendorName": {
+                                            "type": "string",
+                                            "example": "PT Supplier Maju"
+                                        },
+                                        "currencyCode": {
+                                            "type": "string",
+                                            "example": "IDR"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "OPEN"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "Pembelian bahan baku.",
+                                            "nullable": true
+                                        },
+                                        "subtotal": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 500000
+                                        },
+                                        "discount": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 50000
+                                        },
+                                        "tax": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 45000
+                                        },
+                                        "expenseTotal": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 50000
+                                        },
+                                        "downPaymentApplied": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 100000
+                                        },
+                                        "totalAmount": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 545000
+                                        },
+                                        "amountDue": {
+                                            "type": "number",
+                                            "format": "double",
+                                            "example": 445000
+                                        },
+                                        "branchName": {
+                                            "type": "string",
+                                            "example": "Cabang Utama",
+                                            "nullable": true
+                                        },
+                                        "detailItem": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "detailExpense": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "detailDownPayment": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -3310,23 +4228,28 @@
                         }
                     },
                     "404": {
-                        "description": "Faktur pembelian tidak ditemukan.",
+                        "description": "Tidak ditemukan.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "m": {
                                             "type": "string",
                                             "example": "Purchase Invoice not found."
+                                        },
+                                        "d": {
+                                            "type": "object",
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -3340,13 +4263,13 @@
                     "Purchase: Invoice"
                 ],
                 "summary": "Menghapus Faktur Pembelian",
-                "description": "Menghapus data faktur pembelian berdasarkan ID internalnya.",
+                "description": "Hapus faktur berdasarkan ID internal Accurate.",
                 "operationId": "deletePurchaseInvoice",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID unik internal faktur pembelian yang akan dihapus.",
+                        "description": "ID internal Accurate.",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -3356,34 +4279,23 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Faktur pembelian berhasil dihapus.",
+                        "description": "Sukses.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "m": {
                                             "type": "string",
                                             "example": "Data berhasil dihapus."
                                         },
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
+                                        "d": {
+                                            "type": "integer",
+                                            "example": 101,
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
@@ -3392,23 +4304,28 @@
                         }
                     },
                     "404": {
-                        "description": "Faktur pembelian tidak ditemukan.",
+                        "description": "Tidak ditemukan.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "s": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "m": {
                                             "type": "string",
                                             "example": "Purchase Invoice not found or ID not valid for deletion."
+                                        },
+                                        "d": {
+                                            "type": "object",
+                                            "nullable": true
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -3423,14 +4340,14 @@
                 "tags": [
                     "Purchase: Invoice"
                 ],
-                "summary": "Mendapatkan Detail Faktur Pembelian dan Atribut Form Edit",
-                "description": "Mengambil detail lengkap satu faktur pembelian berdasarkan ID dan memberikan atribut data yang akan digunakan sebagai referensi form input untuk pengeditan.",
+                "summary": "Detail Faktur + Atribut Form Edit",
+                "description": "Kombinasi detail faktur & opsi form edit.",
                 "operationId": "getPurchaseInvoiceEditDataAndAttributes",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID unik internal faktur pembelian.",
+                        "description": "ID internal Accurate.",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -3440,49 +4357,80 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Detail faktur pembelian dan atribut form berhasil diambil.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceEditResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Tidak terautentikasi.",
+                        "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
+                                        "data_edit": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 101
+                                                },
+                                                "number": {
+                                                    "type": "string",
+                                                    "example": "PI-20240626-001"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "form_attribute": {
+                                            "properties": {
+                                                "doc_type": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "CTAS_IMPORT",
+                                                            "CTAS_INVOICE",
+                                                            "CTAS_PURCHASE",
+                                                            "CTAS_UNCREDIT",
+                                                            "DIGUNGGUNG"
+                                                        ]
+                                                    }
+                                                },
+                                                "trx_type": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "CTAS_DOKUMEN_KHUSUS",
+                                                            "CTAS_PEMBAYARAN",
+                                                            "CTAS_PEMBERITAHUAN_IMPORT",
+                                                            "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
+                                                            "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
+                                                        ]
+                                                    }
+                                                },
+                                                "tax_type": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "CTAS_BESARAN_TERTENTU",
+                                                            "CTAS_DPP_NILAI_LAIN",
+                                                            "CTAS_IMPOR_BARANG_KENA_PAJAK",
+                                                            "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
+                                                            "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
+                                                            "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
+                                                            "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+                                                            "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
+                                                            "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
+                                                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
+                                                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
+                                                            "CTAS_PENYERAHAN_LAINNYA"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Faktur pembelian tidak ditemukan.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Purchase Invoice not found."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Kesalahan internal server."
                     }
                 },
                 "security": [
@@ -14166,1060 +15114,6 @@
                             }
                         },
                         "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceDetailDownPaymentItem": {
-                "title": "Item Detail Uang Muka Faktur Pembelian",
-                "properties": {
-                    "id": {
-                        "description": "ID unik item uang muka.",
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "invoiceNumber": {
-                        "description": "Nomor faktur uang muka.",
-                        "type": "string",
-                        "example": "DP-PI-001",
-                        "nullable": true
-                    },
-                    "paymentAmount": {
-                        "description": "Jumlah pembayaran uang muka.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 250000
-                    },
-                    "_status": {
-                        "description": "Status operasi untuk item detail (misal: 'delete' untuk menghapus).",
-                        "type": "string",
-                        "enum": [
-                            "delete"
-                        ],
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceDetailExpenseItem": {
-                "title": "Item Detail Biaya Faktur Pembelian",
-                "properties": {
-                    "_status": {
-                        "description": "Status operasi untuk item detail (misal: 'delete' untuk menghapus).",
-                        "type": "string",
-                        "enum": [
-                            "delete"
-                        ],
-                        "nullable": true
-                    },
-                    "accountNo": {
-                        "description": "Nomor akun biaya.",
-                        "type": "string",
-                        "example": "5101-01",
-                        "nullable": true
-                    },
-                    "allocateToItemCost": {
-                        "description": "Apakah dialokasikan ke biaya item.",
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    },
-                    "amountCurrency": {
-                        "description": "Jumlah biaya dalam mata uang.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 50000,
-                        "nullable": true
-                    },
-                    "chargedVendorName": {
-                        "description": "Nama vendor yang dibebankan.",
-                        "type": "string",
-                        "example": "Vendor Layanan A",
-                        "nullable": true
-                    },
-                    "dataClassification10Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification1Name": {
-                        "type": "string",
-                        "example": "Proyek X",
-                        "nullable": true
-                    },
-                    "dataClassification2Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification3Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification4Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification5Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification6Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification7Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification8Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification9Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "departmentName": {
-                        "type": "string",
-                        "example": "Pembelian",
-                        "nullable": true
-                    },
-                    "expenseAmount": {
-                        "description": "Jumlah biaya.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 50000
-                    },
-                    "expenseCurrencyCode": {
-                        "description": "Kode mata uang biaya.",
-                        "type": "string",
-                        "example": "IDR",
-                        "nullable": true
-                    },
-                    "expenseName": {
-                        "type": "string",
-                        "example": "Biaya Pengiriman",
-                        "nullable": true
-                    },
-                    "expenseNotes": {
-                        "type": "string",
-                        "example": "Biaya pengiriman dari supplier.",
-                        "nullable": true
-                    },
-                    "id": {
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "purchaseOrderNumber": {
-                        "description": "Nomor Purchase Order terkait.",
-                        "type": "string",
-                        "example": "PO-001",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceDetailItem": {
-                "title": "Item Detail Faktur Pembelian",
-                "properties": {
-                    "itemNo": {
-                        "description": "Nomor item produk. Wajib.",
-                        "type": "string",
-                        "example": "RAW-001"
-                    },
-                    "unitPrice": {
-                        "description": "Harga satuan item. Wajib.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 100000
-                    },
-                    "_status": {
-                        "description": "Status operasi untuk item detail (misal: 'delete' untuk menghapus).",
-                        "type": "string",
-                        "enum": [
-                            "delete"
-                        ],
-                        "nullable": true
-                    },
-                    "dataClassification10Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification1Name": {
-                        "type": "string",
-                        "example": "Kategori A",
-                        "nullable": true
-                    },
-                    "dataClassification2Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification3Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification4Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification5Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification6Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification7Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification8Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "dataClassification9Name": {
-                        "type": "string",
-                        "example": null,
-                        "nullable": true
-                    },
-                    "departmentName": {
-                        "type": "string",
-                        "example": "Logistik",
-                        "nullable": true
-                    },
-                    "detailName": {
-                        "type": "string",
-                        "example": "Detail Material X",
-                        "nullable": true
-                    },
-                    "detailNotes": {
-                        "type": "string",
-                        "example": "Catatan untuk material ini.",
-                        "nullable": true
-                    },
-                    "id": {
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "itemCashDiscount": {
-                        "description": "Diskon tunai per item.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 0,
-                        "nullable": true
-                    },
-                    "itemDiscPercent": {
-                        "description": "Persentase diskon item.",
-                        "type": "string",
-                        "example": "0",
-                        "nullable": true
-                    },
-                    "itemUnitName": {
-                        "type": "string",
-                        "example": "Unit",
-                        "nullable": true
-                    },
-                    "projectNo": {
-                        "type": "string",
-                        "example": "PROJ-001",
-                        "nullable": true
-                    },
-                    "purchaseOrderNumber": {
-                        "type": "string",
-                        "example": "PO-001",
-                        "nullable": true
-                    },
-                    "purchaseRequisitionNumber": {
-                        "type": "string",
-                        "example": "PR-001",
-                        "nullable": true
-                    },
-                    "quantity": {
-                        "description": "Kuantitas item.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 5,
-                        "nullable": true
-                    },
-                    "receiveItemNumber": {
-                        "type": "string",
-                        "example": "RI-001",
-                        "nullable": true
-                    },
-                    "useTax1": {
-                        "description": "Gunakan pajak 1.",
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    },
-                    "useTax2": {
-                        "description": "Gunakan pajak 2.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "useTax3": {
-                        "description": "Gunakan pajak 3.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "warehouseName": {
-                        "type": "string",
-                        "example": "Gudang A",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceInput": {
-                "title": "Input Faktur Pembelian",
-                "description": "Skema lengkap untuk data input saat membuat atau memperbarui faktur pembelian.",
-                "properties": {
-                    "id": {
-                        "description": "ID unik faktur pembelian. Diperlukan untuk operasi update, null/kosong untuk create.",
-                        "type": "integer",
-                        "example": 101,
-                        "nullable": true
-                    },
-                    "vendorNo": {
-                        "description": "Nomor vendor. Wajib.",
-                        "type": "string",
-                        "example": "VEN-001"
-                    },
-                    "transDate": {
-                        "description": "Tanggal transaksi (DD/MM/YYYY). Wajib.",
-                        "type": "string",
-                        "format": "date",
-                        "example": "31/03/2024"
-                    },
-                    "billNumber": {
-                        "description": "Nomor bill dari vendor.",
-                        "type": "string",
-                        "example": "BILL-123",
-                        "nullable": true
-                    },
-                    "branchId": {
-                        "description": "ID cabang terkait.",
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "branchName": {
-                        "description": "Nama cabang.",
-                        "type": "string",
-                        "example": "Cabang Utama",
-                        "nullable": true
-                    },
-                    "cashDiscPercent": {
-                        "description": "Persentase diskon tunai.",
-                        "type": "string",
-                        "example": "1.5",
-                        "nullable": true
-                    },
-                    "cashDiscount": {
-                        "description": "Jumlah diskon tunai.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 5000,
-                        "nullable": true
-                    },
-                    "currencyCode": {
-                        "description": "Kode mata uang.",
-                        "type": "string",
-                        "example": "IDR",
-                        "nullable": true
-                    },
-                    "description": {
-                        "type": "string",
-                        "example": "Pembelian material baku.",
-                        "nullable": true
-                    },
-                    "documentCode": {
-                        "description": "Kode dokumen faktur.",
-                        "type": "string",
-                        "enum": [
-                            "CTAS_IMPORT",
-                            "CTAS_INVOICE",
-                            "CTAS_PURCHASE",
-                            "CTAS_UNCREDIT",
-                            "DIGUNGGUNG"
-                        ],
-                        "example": "CTAS_INVOICE",
-                        "nullable": true
-                    },
-                    "documentTransaction": {
-                        "description": "Tipe transaksi dokumen.",
-                        "type": "string",
-                        "enum": [
-                            "CTAS_DOKUMEN_KHUSUS",
-                            "CTAS_PEMBAYARAN",
-                            "CTAS_PEMBERITAHUAN_IMPORT",
-                            "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
-                            "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
-                        ],
-                        "example": "CTAS_PEMBAYARAN",
-                        "nullable": true
-                    },
-                    "fillPriceByVendorPrice": {
-                        "description": "Isi harga berdasarkan harga vendor.",
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    },
-                    "fiscalRate": {
-                        "description": "Nilai tukar fiskal.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "fobName": {
-                        "description": "Nama FOB.",
-                        "type": "string",
-                        "example": "Pabrik Vendor",
-                        "nullable": true
-                    },
-                    "inclusiveTax": {
-                        "description": "Apakah pajak termasuk dalam harga.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "inputDownPayment": {
-                        "description": "Jumlah uang muka yang dimasukkan.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 0,
-                        "nullable": true
-                    },
-                    "invoiceDp": {
-                        "description": "Apakah ini faktur uang muka.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "number": {
-                        "description": "Nomor faktur pembelian.",
-                        "type": "string",
-                        "example": "PI-20240626-001",
-                        "nullable": true
-                    },
-                    "orderDownPaymentNumber": {
-                        "description": "Nomor uang muka pesanan.",
-                        "type": "string",
-                        "example": "DP-PO-001",
-                        "nullable": true
-                    },
-                    "paymentTermName": {
-                        "description": "Nama syarat pembayaran.",
-                        "type": "string",
-                        "example": "Net 30",
-                        "nullable": true
-                    },
-                    "rate": {
-                        "description": "Kurs mata uang.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "reverseInvoice": {
-                        "description": "Apakah ini faktur balik.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "shipDate": {
-                        "description": "Tanggal pengiriman (DD/MM/YYYY).",
-                        "type": "string",
-                        "format": "date",
-                        "example": "26/06/2024",
-                        "nullable": true
-                    },
-                    "shipmentName": {
-                        "description": "Nama ekspedisi/pengiriman.",
-                        "type": "string",
-                        "example": "DHL",
-                        "nullable": true
-                    },
-                    "tax1Name": {
-                        "type": "string",
-                        "example": "PPN",
-                        "nullable": true
-                    },
-                    "taxDate": {
-                        "description": "Tanggal pajak (DD/MM/YYYY).",
-                        "type": "string",
-                        "format": "date",
-                        "example": "26/06/2024",
-                        "nullable": true
-                    },
-                    "taxNumber": {
-                        "description": "Nomor faktur pajak.",
-                        "type": "string",
-                        "example": "FKP-001",
-                        "nullable": true
-                    },
-                    "taxable": {
-                        "description": "Apakah item dikenakan pajak.",
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    },
-                    "toAddress": {
-                        "description": "Alamat tujuan pengiriman.",
-                        "type": "string",
-                        "example": "Jl. Tujuan Gudang",
-                        "nullable": true
-                    },
-                    "typeAutoNumber": {
-                        "description": "Tipe penomoran otomatis.",
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "vendorTaxType": {
-                        "description": "Tipe pajak vendor.",
-                        "type": "string",
-                        "enum": [
-                            "CTAS_BESARAN_TERTENTU",
-                            "CTAS_DPP_NILAI_LAIN",
-                            "CTAS_IMPOR_BARANG_KENA_PAJAK",
-                            "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
-                            "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
-                            "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
-                            "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
-                            "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
-                            "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
-                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
-                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
-                            "CTAS_PENYERAHAN_LAINNYA"
-                        ],
-                        "example": "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
-                        "nullable": true
-                    },
-                    "detailDownPayment": {
-                        "description": "Daftar detail uang muka.",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PurchaseInvoiceDetailDownPaymentItem"
-                        },
-                        "nullable": true
-                    },
-                    "detailExpense": {
-                        "description": "Daftar detail biaya.",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PurchaseInvoiceDetailExpenseItem"
-                        },
-                        "nullable": true
-                    },
-                    "detailItem": {
-                        "description": "Daftar detail item pembelian.",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PurchaseInvoiceDetailItem"
-                        },
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceDownPaymentInput": {
-                "title": "Input Uang Muka Faktur Pembelian",
-                "description": "Skema untuk data input saat membuat uang muka faktur pembelian.",
-                "properties": {
-                    "billNumber": {
-                        "description": "Nomor bill dari vendor. Wajib.",
-                        "type": "string",
-                        "example": "BILL-DP-001"
-                    },
-                    "dpAmount": {
-                        "description": "Jumlah uang muka. Wajib.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 100000
-                    },
-                    "vendorNo": {
-                        "description": "Nomor vendor. Wajib.",
-                        "type": "string",
-                        "example": "VEN-001"
-                    },
-                    "branchName": {
-                        "description": "Nama cabang.",
-                        "type": "string",
-                        "example": "Cabang Utama",
-                        "nullable": true
-                    },
-                    "currencyCode": {
-                        "description": "Kode mata uang.",
-                        "type": "string",
-                        "example": "IDR",
-                        "nullable": true
-                    },
-                    "description": {
-                        "description": "Deskripsi uang muka.",
-                        "type": "string",
-                        "example": "Uang muka pembelian.",
-                        "nullable": true
-                    },
-                    "documentCode": {
-                        "description": "Kode dokumen.",
-                        "type": "string",
-                        "enum": [
-                            "CTAS_IMPORT",
-                            "CTAS_INVOICE",
-                            "CTAS_PURCHASE",
-                            "CTAS_UNCREDIT",
-                            "DIGUNGGUNG"
-                        ],
-                        "example": "CTAS_INVOICE",
-                        "nullable": true
-                    },
-                    "documentTransaction": {
-                        "description": "Tipe transaksi dokumen.",
-                        "type": "string",
-                        "enum": [
-                            "CTAS_DOKUMEN_KHUSUS",
-                            "CTAS_PEMBAYARAN",
-                            "CTAS_PEMBERITAHUAN_IMPORT",
-                            "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
-                            "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
-                        ],
-                        "example": "CTAS_PEMBAYARAN",
-                        "nullable": true
-                    },
-                    "fiscalRate": {
-                        "description": "Nilai tukar fiskal.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "inclusiveTax": {
-                        "description": "Apakah pajak termasuk dalam harga.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "isTaxable": {
-                        "description": "Apakah dikenakan pajak.",
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    },
-                    "number": {
-                        "description": "Nomor uang muka.",
-                        "type": "string",
-                        "example": "DP-PI-20240626-001",
-                        "nullable": true
-                    },
-                    "paymentTermName": {
-                        "description": "Nama syarat pembayaran.",
-                        "type": "string",
-                        "example": "Net 30",
-                        "nullable": true
-                    },
-                    "poNumber": {
-                        "description": "Nomor PO terkait.",
-                        "type": "string",
-                        "example": "PO-001",
-                        "nullable": true
-                    },
-                    "rate": {
-                        "description": "Kurs mata uang.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "tax1Name": {
-                        "type": "string",
-                        "example": "PPN",
-                        "nullable": true
-                    },
-                    "taxDate": {
-                        "description": "Tanggal pajak (DD/MM/YYYY).",
-                        "type": "string",
-                        "format": "date",
-                        "example": "26/06/2024",
-                        "nullable": true
-                    },
-                    "taxNumber": {
-                        "description": "Nomor faktur pajak.",
-                        "type": "string",
-                        "example": "FAK-PAJAK-DP-001",
-                        "nullable": true
-                    },
-                    "toAddress": {
-                        "description": "Alamat penerima.",
-                        "type": "string",
-                        "example": "Jl. Penerima DP",
-                        "nullable": true
-                    },
-                    "transDate": {
-                        "description": "Tanggal transaksi (DD/MM/YYYY).",
-                        "type": "string",
-                        "format": "date",
-                        "example": "26/06/2024",
-                        "nullable": true
-                    },
-                    "typeAutoNumber": {
-                        "description": "Tipe penomoran otomatis.",
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "vendorTaxType": {
-                        "description": "Tipe pajak vendor.",
-                        "type": "string",
-                        "enum": [
-                            "CTAS_BESARAN_TERTENTU",
-                            "CTAS_DPP_NILAI_LAIN",
-                            "CTAS_IMPOR_BARANG_KENA_PAJAK",
-                            "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
-                            "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
-                            "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
-                            "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
-                            "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
-                            "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
-                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
-                            "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
-                            "CTAS_PENYERAHAN_LAINNYA"
-                        ],
-                        "example": "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceData": {
-                "title": "Detail Data Faktur Pembelian",
-                "description": "Representasi lengkap data satu faktur pembelian dari Accurate.",
-                "required": [
-                    "id",
-                    "number",
-                    "transDate",
-                    "vendorName",
-                    "totalAmount"
-                ],
-                "properties": {
-                    "id": {
-                        "description": "ID unik internal faktur.",
-                        "type": "integer",
-                        "example": 101
-                    },
-                    "number": {
-                        "description": "Nomor faktur pembelian.",
-                        "type": "string",
-                        "example": "PI-20240626-001"
-                    },
-                    "transDate": {
-                        "description": "Tanggal transaksi (DD/MM/YYYY).",
-                        "type": "string",
-                        "example": "26/06/2024"
-                    },
-                    "vendorName": {
-                        "description": "Nama vendor.",
-                        "type": "string",
-                        "example": "PT Supplier Maju"
-                    },
-                    "totalAmount": {
-                        "description": "Total jumlah faktur.",
-                        "type": "number",
-                        "format": "double",
-                        "example": 1500000
-                    },
-                    "branchName": {
-                        "description": "Nama cabang.",
-                        "type": "string",
-                        "example": "Cabang Utama",
-                        "nullable": true
-                    },
-                    "description": {
-                        "description": "Deskripsi faktur.",
-                        "type": "string",
-                        "example": "Pembelian bahan baku.",
-                        "nullable": true
-                    },
-                    "currencyCode": {
-                        "description": "Kode mata uang.",
-                        "type": "string",
-                        "example": "IDR"
-                    },
-                    "status": {
-                        "description": "Status faktur (OPEN, PAID, etc.).",
-                        "type": "string",
-                        "example": "OPEN"
-                    },
-                    "detailItem": {
-                        "description": "Daftar item faktur.",
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
-                    },
-                    "detailExpense": {
-                        "description": "Daftar biaya faktur.",
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
-                    },
-                    "detailDownPayment": {
-                        "description": "Daftar uang muka faktur.",
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceListResponse": {
-                "title": "Respons Daftar Faktur Pembelian",
-                "description": "Struktur respons untuk daftar faktur pembelian dengan informasi paginasi.",
-                "properties": {
-                    "success": {
-                        "description": "Menunjukkan apakah permintaan berhasil.",
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "status": {
-                        "description": "Kode status HTTP.",
-                        "type": "integer",
-                        "example": 200
-                    },
-                    "data": {
-                        "description": "Objek data utama",
-                        "properties": {
-                            "s": {
-                                "description": "Indikator keberhasilan dari Accurate API.",
-                                "type": "boolean",
-                                "example": true
-                            },
-                            "d": {
-                                "description": "Array daftar objek faktur pembelian.",
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/PurchaseInvoiceData"
-                                }
-                            },
-                            "sp": {
-                                "description": "Informasi paginasi",
-                                "properties": {
-                                    "page": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "pageSize": {
-                                        "type": "integer",
-                                        "example": 50
-                                    },
-                                    "pageCount": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "rowCount": {
-                                        "type": "integer",
-                                        "example": 5
-                                    },
-                                    "start": {
-                                        "type": "integer",
-                                        "example": 0
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceSaveUpdateDeleteResponse": {
-                "title": "Respons Sukses Generik Faktur Pembelian",
-                "description": "Respons umum dari Accurate API untuk operasi simpan, update, atau hapus faktur pembelian yang berhasil.",
-                "properties": {
-                    "s": {
-                        "description": "Status sukses dari Accurate API.",
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "m": {
-                        "description": "Pesan dari Accurate API.",
-                        "type": "string",
-                        "example": "Data berhasil disimpan."
-                    },
-                    "d": {
-                        "description": "ID objek yang baru dibuat/diperbarui/dihapus (opsional).",
-                        "type": "integer",
-                        "example": 101,
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceDetailResponse": {
-                "title": "Respons Detail Faktur Pembelian",
-                "description": "Struktur respons untuk detail faktur pembelian tunggal.",
-                "properties": {
-                    "success": {
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "status": {
-                        "type": "integer",
-                        "example": 200
-                    },
-                    "data": {
-                        "$ref": "#/components/schemas/PurchaseInvoiceData"
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceFormAttributesResponse": {
-                "title": "Atribut Form Faktur Pembelian",
-                "description": "Daftar opsi dan atribut yang diperlukan untuk form pembuatan/pengeditan faktur pembelian.",
-                "properties": {
-                    "doc_type": {
-                        "description": "Opsi tipe dokumen.",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "CTAS_IMPORT",
-                                "CTAS_INVOICE",
-                                "CTAS_PURCHASE",
-                                "CTAS_UNCREDIT",
-                                "DIGUNGGUNG"
-                            ]
-                        }
-                    },
-                    "trx_type": {
-                        "description": "Opsi tipe transaksi.",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "CTAS_DOKUMEN_KHUSUS",
-                                "CTAS_PEMBAYARAN",
-                                "CTAS_PEMBERITAHUAN_IMPORT",
-                                "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
-                                "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
-                            ]
-                        }
-                    },
-                    "tax_type": {
-                        "description": "Opsi tipe pajak.",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "CTAS_BESARAN_TERTENTU",
-                                "CTAS_DPP_NILAI_LAIN",
-                                "CTAS_IMPOR_BARANG_KENA_PAJAK",
-                                "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
-                                "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
-                                "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
-                                "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
-                                "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
-                                "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
-                                "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
-                                "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
-                                "CTAS_PENYERAHAN_LAINNYA"
-                            ]
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceDownpayFormAttributesResponse": {
-                "title": "Atribut Form Uang Muka Faktur Pembelian",
-                "description": "Daftar opsi dan atribut yang diperlukan untuk form pembuatan uang muka faktur pembelian.",
-                "properties": {
-                    "doc_code": {
-                        "description": "Opsi kode dokumen.",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "CTAS_IMPORT",
-                                "CTAS_INVOICE",
-                                "CTAS_PURCHASE",
-                                "CTAS_UNCREDIT",
-                                "DIGUNGGUNG"
-                            ]
-                        }
-                    },
-                    "trx_type": {
-                        "description": "Opsi tipe transaksi.",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "CTAS_DOKUMEN_KHUSUS",
-                                "CTAS_PEMBAYARAN",
-                                "CTAS_PEMBERITAHUAN_IMPORT",
-                                "CTAS_PEMBERITAHUAN_IMPORT_DAN_PEMBAYARAN",
-                                "CTAS_SURAT_KETETAPAN_PAJAK_KURANG_TAMBAH"
-                            ]
-                        }
-                    },
-                    "tax_type": {
-                        "description": "Opsi tipe pajak.",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "CTAS_BESARAN_TERTENTU",
-                                "CTAS_DPP_NILAI_LAIN",
-                                "CTAS_IMPOR_BARANG_KENA_PAJAK",
-                                "CTAS_KEPADA_ORANG_PRIBADI_PEMEGANG_PASPOR_LUAR_NEGERI",
-                                "CTAS_KEPADA_PEMUNGUT_PPN_INSTANSI_PEMERINTAH",
-                                "CTAS_KEPADA_PEMUNGUT_PPN_SELAIN_INSTANSI_PEMERINTAH",
-                                "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
-                                "CTAS_PEMANFAATAN_BARANG_TIDAK_BERWUJUD_DAN_JASA_KENA_PAJAK",
-                                "CTAS_PENYERAHAN_AKTIVA_TIDAK_DIPERJUALBELIKAN",
-                                "CTAS_PENYERAHAN_DENGAN_FASILITAS_DIBEBASKAN",
-                                "CTAS_PENYERAHAN_DENGAN_FASILITAS_TIDAK_DIPUNGUT",
-                                "CTAS_PENYERAHAN_LAINNYA"
-                            ]
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "PurchaseInvoiceEditResponse": {
-                "title": "Respons Edit Faktur Pembelian",
-                "description": "Struktur respons yang menggabungkan detail faktur pembelian dan atribut form untuk pengeditan.",
-                "properties": {
-                    "data_edit": {
-                        "$ref": "#/components/schemas/PurchaseInvoiceData"
-                    },
-                    "form_attribute": {
-                        "$ref": "#/components/schemas/PurchaseInvoiceFormAttributesResponse"
                     }
                 },
                 "type": "object"

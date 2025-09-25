@@ -7,6 +7,7 @@ use App\Support\Accurate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Docs\Accurate\Product\ItemSchemas;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Tag(
@@ -88,7 +89,7 @@ class ItemController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Item@index error', ['e' => $e]);
+            Log::error('Item@index error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -172,7 +173,7 @@ class ItemController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Item or nearest cost not found'], 404);
         } catch (\Throwable $e) {
-            \Log::error('Item@nearestCost error', ['e' => $e]);
+            Log::error('Item@nearestCost error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -281,7 +282,7 @@ class ItemController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Selling price not found'], 404);
         } catch (\Throwable $e) {
-            \Log::error('Item@sellingPrice error', ['e' => $e]);
+            Log::error('Item@sellingPrice error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -360,7 +361,7 @@ class ItemController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Stock not found'], 404);
         } catch (\Throwable $e) {
-            \Log::error('Item@stock error', ['e' => $e]);
+            Log::error('Item@stock error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -489,7 +490,7 @@ class ItemController extends Controller
                 'message' => 'Mutation history not found',
             ], 404);
         } catch (\Throwable $e) {
-            \Log::error('Item@stockMutationHistory error', ['e' => $e]);
+            Log::error('Item@stockMutationHistory error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -621,7 +622,7 @@ class ItemController extends Controller
             ], 404);
 
         } catch (\Throwable $e) {
-            \Log::error('Item@vendorPrices error', ['e' => $e]);
+            Log::error('Item@vendorPrices error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -650,7 +651,7 @@ class ItemController extends Controller
             }
             return response()->json(['success' => false, 'message' => 'Item not found'], 404);
         } catch (\Throwable $e) {
-            \Log::error('Item@show error', ['e' => $e]);
+            Log::error('Item@show error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -681,16 +682,10 @@ class ItemController extends Controller
     {
         try {
             $payload = $request->all(); // validasi sesuai kebutuhanmu
-            $res = $this->accurate->post(true, 'item/save.do', $payload, []);
-            $created = empty($payload['id'] ?? null);
-
-            return response()->json([
-                'success' => (bool) ($res['s'] ?? false),
-                'message' => $res['m'] ?? ($created ? 'Created' : 'Updated'),
-                'data' => $res['d'] ?? null,
-            ], $created ? 201 : 200);
+            $response = $this->accurate->post(true, 'item/save.do', $payload, []);
+            return response()->json($response, $response['status']);
         } catch (\Throwable $e) {
-            \Log::error('Item@store error', ['e' => $e]);
+            Log::error('Item@store error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -718,15 +713,11 @@ class ItemController extends Controller
             if (empty($payload['id'])) {
                 return response()->json(['success' => false, 'message' => 'ID is required for update'], 422);
             }
-            $res = $this->accurate->post(true, 'item/save.do', $payload, []);
+            $response = $this->accurate->post(true, 'item/save.do', $payload, []);
 
-            return response()->json([
-                'success' => (bool) ($res['s'] ?? false),
-                'message' => $res['m'] ?? 'Updated',
-                'data' => $res['d'] ?? null,
-            ]);
+            return response()->json($response, $response['status']);
         } catch (\Throwable $e) {
-            \Log::error('Item@update error', ['e' => $e]);
+            Log::error('Item@update error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -762,7 +753,7 @@ class ItemController extends Controller
             }
             return response()->json(['success' => false, 'message' => $res['m'] ?? 'Item not found or cannot be deleted.'], 404);
         } catch (\Throwable $e) {
-            \Log::error('Item@destroy error', ['e' => $e]);
+            Log::error('Item@destroy error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }

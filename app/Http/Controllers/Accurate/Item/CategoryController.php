@@ -7,6 +7,8 @@ use App\Support\Accurate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Docs\Accurate\Product\ItemCataegorySchemas;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\FacadesLog;
 
 /**
  * @OA\Tag(
@@ -98,7 +100,7 @@ class CategoryController extends Controller
                 ],
             ], 200);
         } catch (\Throwable $e) {
-            \Log::error('ItemCategory@index error', ['e' => $e]);
+            Log::error('ItemCategory@index error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -135,7 +137,7 @@ class CategoryController extends Controller
             }
             return response()->json(['success' => false, 'message' => 'Item category not found'], 404);
         } catch (\Throwable $e) {
-            \Log::error('ItemCategory@show error', ['e' => $e]);
+            Log::error('ItemCategory@show error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -174,17 +176,11 @@ class CategoryController extends Controller
     {
         try {
             $payload = $request->all();
-            $created = empty($payload['id'] ?? null);
+            $response = $this->accurate->post(true, 'item-category/save.do', $payload, []);
 
-            $res = $this->accurate->post(true, 'item-category/save.do', $payload, []);
-
-            return response()->json([
-                'success' => (bool) ($res['s'] ?? false),
-                'message' => $res['m'] ?? ($created ? 'Created' : 'Updated'),
-                'data'    => $res['d'] ?? null,
-            ], $created ? 201 : 200);
+            return response()->json($response, $response['status']);
         } catch (\Throwable $e) {
-            \Log::error('ItemCategory@store error', ['e' => $e]);
+            Log::error('ItemCategory@store error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -216,15 +212,11 @@ class CategoryController extends Controller
                 return response()->json(['success' => false, 'message' => 'ID is required for update'], 422);
             }
 
-            $res = $this->accurate->post(true, 'item-category/save.do', $payload, []);
+            $response = $this->accurate->post(true, 'item-category/save.do', $payload, []);
 
-            return response()->json([
-                'success' => (bool) ($res['s'] ?? false),
-                'message' => $res['m'] ?? 'Updated',
-                'data'    => $res['d'] ?? null,
-            ], 200);
+            return response()->json($response, $response['status']);
         } catch (\Throwable $e) {
-            \Log::error('ItemCategory@update error', ['e' => $e]);
+            Log::error('ItemCategory@update error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -272,7 +264,7 @@ class CategoryController extends Controller
                 'message' => $res['m'] ?? 'Item category not found or cannot be deleted.'
             ], 404);
         } catch (\Throwable $e) {
-            \Log::error('ItemCategory@destroy error', ['e' => $e]);
+            Log::error('ItemCategory@destroy error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }

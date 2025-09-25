@@ -7,6 +7,7 @@ use App\Http\Requests\Employe\FormRequest;
 use App\Http\Requests\Employe\IndexRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\EmployeSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class EmployeController extends Controller
 {
@@ -287,7 +288,7 @@ class EmployeController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
-            \Log::error("Error in EmployeController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in EmployeController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -406,6 +407,6 @@ class EmployeController extends Controller
     {
         $response = $this->accurate->post(true, 'employee/save.do', $input, []);
 
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 }

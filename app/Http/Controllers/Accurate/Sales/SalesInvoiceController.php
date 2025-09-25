@@ -7,6 +7,7 @@ use App\Http\Requests\SalesInvoice\FormRequest;
 use App\Http\Requests\SalesInvoice\IndexRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\SalesInvoiceSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class SalesInvoiceController extends Controller
 {
@@ -347,7 +348,7 @@ class SalesInvoiceController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
-            \Log::error("Error in SalesInvoiceController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in SalesInvoiceController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -466,6 +467,6 @@ class SalesInvoiceController extends Controller
     {
         $response = $this->accurate->post(true, 'sales-invoice/save.do', $input, []);
 
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 }

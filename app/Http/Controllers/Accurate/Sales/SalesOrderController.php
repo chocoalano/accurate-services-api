@@ -7,6 +7,7 @@ use App\Http\Requests\SalesOrder\FormRequest;
 use App\Http\Requests\SalesOrder\IndexRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\SalesOrderSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class SalesOrderController extends Controller
 {
@@ -175,7 +176,7 @@ class SalesOrderController extends Controller
         $input = $request->validated();
         $url = 'sales-order/save.do'; // Accurate API yang sama untuk create dan update
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**
@@ -354,7 +355,7 @@ class SalesOrderController extends Controller
                 ]
             ]);
         } catch (\Throwable $th) {
-            \Log::error("Error in SalesOrderController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in SalesOrderController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -410,7 +411,7 @@ class SalesOrderController extends Controller
         $input = $request->validated();
         $url = 'sales-order/save.do';
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**

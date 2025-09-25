@@ -7,6 +7,7 @@ use App\Http\Requests\Warehouse\FormRequest;
 use App\Http\Requests\Warehouse\IndexRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\WarehouseSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class WarehouseController extends Controller
 {
@@ -149,7 +150,7 @@ class WarehouseController extends Controller
         $input = $request->validated();
         $url = 'warehouse/save.do'; // Accurate API yang sama untuk create dan update
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**
@@ -263,7 +264,7 @@ class WarehouseController extends Controller
                 'form_attribute' => [] // Sesuai dengan create() yang mengembalikan array kosong
             ]);
         } catch (\Throwable $th) {
-            \Log::error("Error in WarehouseController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in WarehouseController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -319,7 +320,7 @@ class WarehouseController extends Controller
         $input = $request->validated();
         $url = 'warehouse/save.do';
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**

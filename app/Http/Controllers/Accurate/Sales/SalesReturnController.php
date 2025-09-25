@@ -7,6 +7,7 @@ use App\Http\Requests\SalesReturn\FormRequest;
 use App\Http\Requests\SalesReturn\IndexRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\SalesReturnSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class SalesReturnController extends Controller
 {
@@ -329,7 +330,7 @@ class SalesReturnController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
-            \Log::error("Error in SalesReturnController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in SalesReturnController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -448,6 +449,6 @@ class SalesReturnController extends Controller
     {
         $response = $this->accurate->post(true, 'sales-return/save.do', $input, []);
 
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\Customer\FormCustomerRequest;
 use App\Http\Requests\Customer\IndexCustomerRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\CustomerSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -170,7 +171,7 @@ class CustomerController extends Controller
         $input = $request->validated();
         $url = 'customer/save.do'; // API Accurate yang sama untuk create dan update
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**
@@ -307,7 +308,7 @@ class CustomerController extends Controller
             ]);
         } catch (\Throwable $th) {
             // Log the exception for debugging
-            \Log::error("Error in CustomerController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in CustomerController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500); // Return a generic 500
         }
     }
@@ -366,7 +367,7 @@ class CustomerController extends Controller
         $input = $request->validated();
         $url = 'customer/save.do'; // API Accurate yang sama untuk create dan update
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**

@@ -94,7 +94,6 @@ class Accurate
         $finalUrl = $baseUrl . '/api/' . ltrim($url, '/');
         if ($method === 'GET' && !empty($data)) {
             $finalUrl .= '?' . http_build_query($data);
-            // dd($finalUrl);
         }
 
         curl_setopt_array($curl, [
@@ -125,7 +124,6 @@ class Accurate
         }
 
         $decodedResponse = json_decode($response, true);
-
         if ($httpCode >= 400) {
             Log::error("HTTP Error [$httpCode]: " . $response);
             return [
@@ -134,7 +132,6 @@ class Accurate
                 'error' => $decodedResponse,
             ];
         }
-
         return [
             'success' => true,
             'status' => $httpCode,

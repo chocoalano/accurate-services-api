@@ -7,6 +7,8 @@ use App\Support\Accurate;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Docs\Accurate\VendorSchemas;
+use Illuminate\Support\Facades\Log;
+
 /**
  * @OA\Tag(
  *   name="Pemasok (Vendor)",
@@ -113,7 +115,7 @@ class SupplierController extends Controller
                 ],
             ], 200);
         } catch (\Throwable $e) {
-            \Log::error('Vendor@index error', ['e' => $e]);
+            Log::error('Vendor@index error', ['e' => $e]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -189,18 +191,10 @@ class SupplierController extends Controller
                     'message' => 'Field "name" wajib diisi.'
                 ], 422);
             }
-
-            $created = empty($payload['id'] ?? null);
-
-            $res = $this->accurate->post(true, 'vendor/save.do', $payload, []);
-
-            return response()->json([
-                'success' => (bool) ($res['s'] ?? false),
-                'message' => $res['m'] ?? ($created ? 'Created' : 'Updated'),
-                'data'    => $res['d'] ?? null,
-            ], $created ? 201 : 200);
+            $response = $this->accurate->post(true, 'vendor/save.do', $payload, []);
+            return response()->json($response, $response['status']);
         } catch (\Throwable $e) {
-            \Log::error('Vendor@store error', ['e' => $e, 'payload' => $request->all()]);
+            Log::error('Vendor@store error', ['e' => $e, 'payload' => $request->all()]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -247,7 +241,7 @@ class SupplierController extends Controller
             }
             return response()->json(['success' => false, 'message' => 'Vendor not found'], 404);
         } catch (\Throwable $e) {
-            \Log::error('Vendor@show error', ['e' => $e, 'id' => $id]);
+            Log::error('Vendor@show error', ['e' => $e, 'id' => $id]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -290,15 +284,11 @@ class SupplierController extends Controller
                 return response()->json(['success' => false, 'message' => 'Field "name" wajib diisi.'], 422);
             }
 
-            $res = $this->accurate->post(true, 'vendor/save.do', $payload, []);
+            $response = $this->accurate->post(true, 'vendor/save.do', $payload, []);
 
-            return response()->json([
-                'success' => (bool) ($res['s'] ?? false),
-                'message' => $res['m'] ?? 'Updated',
-                'data'    => $res['d'] ?? null,
-            ], 200);
+            return response()->json($response, $response['status']);
         } catch (\Throwable $e) {
-            \Log::error('Vendor@update error', ['e' => $e, 'payload' => $request->all()]);
+            Log::error('Vendor@update error', ['e' => $e, 'payload' => $request->all()]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
@@ -346,7 +336,7 @@ class SupplierController extends Controller
                 'message' => $res['m'] ?? 'Vendor not found or cannot be deleted.'
             ], 404);
         } catch (\Throwable $e) {
-            \Log::error('Vendor@destroy error', ['e' => $e, 'id' => $id]);
+            Log::error('Vendor@destroy error', ['e' => $e, 'id' => $id]);
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }

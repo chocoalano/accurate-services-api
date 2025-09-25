@@ -7,6 +7,7 @@ use App\Http\Requests\Purchase\Payment\FormRequest;
 use App\Http\Requests\Purchase\Payment\IndexRequest;
 use App\Support\Accurate;
 use App\Docs\Accurate\Purchase\PaymentSchemas; // Pastikan ini di-use
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -163,7 +164,7 @@ class PaymentController extends Controller
         $input = $request->validated();
         $url = 'purchase-payment/save.do';
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**
@@ -279,7 +280,7 @@ class PaymentController extends Controller
                 ]
             ]);
         } catch (\Throwable $th) {
-            \Log::error("Error in PaymentController@edit: " . $th->getMessage(), ['exception' => $th]);
+            Log::error("Error in PaymentController@edit: " . $th->getMessage(), ['exception' => $th]);
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -335,7 +336,7 @@ class PaymentController extends Controller
         $input = $request->validated();
         $url = 'purchase-payment/save.do';
         $response = $this->accurate->post(true, $url, $input, []);
-        return response()->json($response);
+        return response()->json($response, $response['status']);
     }
 
     /**
