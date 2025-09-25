@@ -117,7 +117,7 @@ class OrderController extends Controller
      *           example={
      *             "vendorNo": "V.00003",
      *             "transDate": "24/09/2025",
-     *             "cashDiscPercent": 2,
+     *             "cashDiscPercent": "2%",
      *             "cashDiscount": 5000,
      *             "currencyCode": "IDR",
      *             "description": "Pesanan rutin material. (testing data)",
